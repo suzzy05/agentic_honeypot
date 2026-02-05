@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  honeypot:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - API_KEY=${API_KEY:-SECRET123}
+      - GUVI_CALLBACK=https://hackathon.guvi.in/api/updateHoneyPotFinalResult
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - honeypot-network
+
+  # Optional: Add monitoring with Prometheus
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   ports:
+  #     - "9090:9090"
+  #   volumes:
+  #     - ./prometheus.yml:/etc/prometheus/prometheus.yml
+  #   networks:
+  #     - honeypot-network
+
+networks:
+  honeypot-network:
+    driver: bridge
+
+volumes:
+  logs:
