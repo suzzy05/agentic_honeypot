@@ -49,6 +49,20 @@ class HoneypotResponse(BaseModel):
     scamDetected: Optional[bool] = Field(None, description="Whether scam was detected")
     confidence: Optional[float] = Field(None, description="Scam detection confidence")
 
+@app.get("/")
+async def root():
+    """Root endpoint - returns API info"""
+    return {
+        "status": "healthy",
+        "service": "Agentic Honeypot API",
+        "version": "2.0.0",
+        "timestamp": int(time.time() * 1000),
+        "endpoints": {
+            "honeypot": "/honeypot/message",
+            "stats": "/stats"
+        }
+    }
+
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     """Global exception handler for better error responses"""
